@@ -8,18 +8,10 @@ const {secretKey, expiresIn} = require('../../configration/jwt_collection');
 
 // creating account function
 module.exports.createUserApi = async (req ,res) => {
-    const {name , email ,password} = req.body;
-
-    // Define regex to validate email format
-    const emailRegex = /^([a-zA-z0-9._-]+)@(gmail|yahoo|hotmail|zohomail|hcl|live|outlook)\.(com)$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({
-            message:"Enter Valid Email Address."
-        });
-    };
+    const {userName, userEmail ,userPassword} = req.body;
 
     try{
-        const validEmail = email.toLowerCase();
+        const validEmail = userEmail.toLowerCase();
         // Checking if a user with the provided email already exists
         const existingUser = await UserModel.findOne({ userEmail: validEmail });
         if(existingUser){
@@ -30,9 +22,9 @@ module.exports.createUserApi = async (req ,res) => {
         };
 
         // If user doesn't exist, hash the password and create a new user
-        const hashedPassword = await bcryptJs.hash(password, 10); 
+        const hashedPassword = await bcryptJs.hash(userPassword, 10); 
         const newUser = await new UserModel({
-            userName: name,
+            userName: userName,
             userEmail:validEmail,
             userPassword: hashedPassword,
         });
@@ -56,9 +48,9 @@ module.exports.createUserApi = async (req ,res) => {
 
 module.exports.loginUserAPI = async (req ,res) => {
     // Extract email and password from request body  
-    const { email, password } = req.body; 
+    const { userEmail, userPassword } = req.body; 
     // Convert email to lowercase for case-insensitive comparison
-    const validEmail = email.toLowerCase(); 
+    const validEmail = userEmail.toLowerCase(); 
 
     try{
 
@@ -71,7 +63,7 @@ module.exports.loginUserAPI = async (req ,res) => {
       };
 
        // Verify the password
-       const passwordMatch = await bcryptJs.compare(password, userExists.userPassword);
+       const passwordMatch = await bcryptJs.compare(userPassword, userExists.userPassword);
        if(!passwordMatch){
             return res.status(401).json({
                 message: 'Incorrect Password'
