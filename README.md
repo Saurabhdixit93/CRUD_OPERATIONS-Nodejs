@@ -1,92 +1,443 @@
-# backendCrudOperationNodejs
+
+# User Account and Task Management API
+
+This API allows you to manage user accounts and tasks. It provides endpoints for creating, updating, and deleting user accounts, as well as creating, retrieving, updating, and deleting tasks.
+
+## Endpoints
+
+## User API Endpoints
+
+### Create User
+
+Creates a new user account.
+
+- URL: `/api/v1/create-account`
+- Method: `POST`
+- Request Body:
+  - `userName` (required): The name of the user.
+  - `userEmail` (required): The email address of the user.
+  - `userPassword` (required): The password of the user.
+- Response:
+  - `201 Created`: If the user account is created successfully, along with the created user details.
+  - `400 Bad Request`: If the provided email address is not valid.
+  - `409 Conflict`: If a user with the provided email already exists.
+  - `500 Internal Server Error`: If there was an error creating the user account.
+
+Example
+
+Request:
+
+POST /api/v1/create-account
 
 
+Request Body:
 
-## Getting started
+json
+{
+  "userName": "John Doe",
+  "userEmail": "johndoe@example.com",
+  "userPassword": "password123"
+}
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Response:
 
-## Add your files
+json
+{
+  "message": "New account created successfully",
+  "user": {
+    "_id": "123",
+    "userName": "John Doe",
+    "userEmail": "johndoe@example.com"
+  }
+}
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/saurabh-dixit1/backendcrudoperationnodejs.git
-git branch -M main
-git push -uf origin main
-```
+### User Login
 
-## Integrate with your tools
+Logs in a user and provides an authentication token.
 
-- [ ] [Set up project integrations](https://gitlab.com/saurabh-dixit1/backendcrudoperationnodejs/-/settings/integrations)
+- URL: `/api/v1/login-account/`
+- Method: `POST`
+- Request Body:
+  - `userEmail` (required): The email address of the user.
+  - `userPassword` (required): The password of the user.
+- Response:
+  - `200 OK`: If the login is successful, along with the authentication token and token expiration time.
+  - `404 Not Found`: If the user with the provided email is not found or the user does not exist.
+  - `401 Unauthorized`: If the provided password is incorrect.
+  - `500 Internal Server Error`: If there was an error during the login process.
 
-## Collaborate with your team
+Example
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+Request:
 
-## Test and Deploy
+POST /api/v1/login-account
 
-Use the built-in continuous integration in GitLab.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Request Body:
 
-***
+json
+{
+  "userEmail": "johndoe@example.com",
+  "userPassword": "password123"
+}
 
-# Editing this README
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Response:
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+json
+{
+  "message": "Login successful",
+  "token": "<authentication-token>",
+  "expiresIn": "3600 seconds"
+}
 
-## Name
-Choose a self-explaining name for your project.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### Delete User Account
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Deletes a user account based on the provided user ID.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- URL: `/api/v1/delete-account/:userId`
+- Method: `DELETE`
+- Parameters:
+  - `userId` (required): The ID of the user.
+- Response:
+  - `200 OK`: If the user account is deleted successfully.
+  - `404 Not Found`: If the user with the specified ID is not found.
+  - `500 Internal Server Error`: If there was an error deleting the user account.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Example
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Request:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+DELETE /api/v1/delete-account/123
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Response:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+json
+{
+  "message": "User account deleted successfully"
+}
+`
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+### Update User Account
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Updates the details of a user account based on the provided user ID.
+
+- URL: `/api/v1/update-account/:userId`
+- Method: `PUT`
+- Parameters:
+  - `userId` (required): The ID of the user.
+- Request Body:
+  - `userName` (optional): The updated name of the user.
+  - `userEmail` (optional): The updated email address of the user.
+  - `userPassword` (optional): The updated password of the user.
+- Response:
+  - 200 OK: If the user account is updated successfully, along with the updated user details.
+  - 404 Not Found: If the user with the specified ID is not found.
+  - 500 Internal Server Error: If there was an error updating the user account.
+
+Example
+
+Request:
+
+PUT /api/v1/update-account/123
+
+
+Request Body:
+json
+{
+  "userName": "John Smith",
+  "userEmail": "johnsmith@example.com"
+}
+
+
+Response:
+json
+{
+  "message": "User details updated successfully",
+  "user": {
+    "_id": "123",
+    "userName": "John Smith",
+    "userEmail": "johnsmith@example.com"
+  }
+}
+
+
+### Create Task
+
+Creates a new task.
+
+- URL: /api/v1/task/create-task
+- Method: POST
+- Request Body:
+  - taskTitle (required): The title of the task.
+  - taskDescription (required): The description of the task.
+  - taskAssignedTo (required): The user assigned to the task.
+  - taskPriority (required): The priority of the task.
+  - taskStatus (required): The status of the task.
+- Response:
+  - 200 OK: If the task is created successfully.
+  - 500 Internal Server Error: If there was an error creating the task.
+
+Example
+
+Request:
+
+POST /tasks/create
+
+
+Request Body:
+json
+{
+  "taskTitle": "Complete Project",
+  "taskDescription": "Finish the project tasks by the deadline",
+  "taskAssignedTo": "John Doe",
+  "taskPriority": "High",
+  "taskStatus": "In Progress"
+}
+
+
+Response:
+json
+{
+  "message": "Task created successfully, Here are the task details",
+  "task": {
+    "_id": "456",
+    "taskTitle": "Complete Project",
+    "taskDescription": "Finish the project tasks by the deadline",
+    "taskAssignedTo": "John Doe",
+    "taskPriority": "High",
+    "taskStatus": "In Progress",
+    "user":"424"
+  }
+}
+
+
+### Get Specific Task
+
+Retrieves a specific task based on the provided task ID.
+
+- URL: /api/v1/task/get/:taskID
+- Method: GET
+- Parameters:
+  - taskId (required): The ID of the task.
+- Response:
+  - 200 OK: If the task is found, along with the task details.
+  - 404 Not Found: If the task with the specified ID is not found.
+  - 500 Internal Server Error: If there was an error retrieving the task.
+
+Example
+
+Request:
+
+GET /api/v1/task/get/456
+
+
+Response:
+json
+{
+  "message": "Task Found with the given task ID",
+  "task": {
+    "_id": "456",
+    "taskTitle": "Complete Project",
+    "taskDescription":"Finish the project tasks by the deadline",
+    "taskAssignedTo": "John Doe",
+    "taskPriority": "High",
+    "taskStatus": "In Progress"
+  }
+}
+
+
+### Get All Tasks
+
+Retrieves all tasks associated with a specific user.
+
+- URL: /api/v1/task/get-tasks/:userId
+- Method: GET
+- Parameters:
+  - userId (required): The ID of the user.
+- Response:
+  - 200 OK: If tasks are found for the user, along with the list of tasks.
+  - 404 Not Found: If no tasks are associated with the user.
+  - 500 Internal Server Error: If there was an error retrieving the tasks.
+
+Example
+
+Request:
+
+GET /api/v1/task/get-tasks/789
+
+
+Response:
+json
+{
+  "message": "User's associated tasks retrieved successfully",
+  "getTasks": [
+    {
+      "_id": "456",
+      "taskTitle": "Complete Project",
+      "taskDescription": "Finish the project tasks by the deadline",
+      "taskAssignedTo": "John Doe",
+      "taskPriority": "High",
+      "taskStatus": "In Progress"
+    },
+    {
+      "_id": "789",
+      "taskTitle": "Review Proposal",
+      "taskDescription": "Review and provide feedback on the project proposal",
+      "taskAssignedTo": "John Doe",
+      "taskPriority": "Medium",
+      "taskStatus": "Pending"
+    }
+  ]
+}
+
+
+### Update Task
+
+Updates the details of a task based on the provided task ID.
+
+- URL: /api/v1/task/update-task/:taskID
+- Method: PUT
+- Parameters:
+  - taskId (required): The ID of the task.
+- Request Body:
+  - taskTitle (optional): The updated title of the task.
+  - taskDescription (optional): The updated description of the task.
+  - taskAssignedTo (optional): The updated user assigned to the task.
+  - taskPriority (optional): The updated priority of the task.
+  - taskStatus (optional): The updated status of the task.
+- Response:
+  - 200 OK: If the task is updated successfully, along with the updated task details.
+  - 404 Not Found: If the task with the specified ID is not found.
+  - 500 Internal Server Error: If there was an error updating the task.
+
+Example
+
+Request:
+
+PUT /api/v1/task/update-task/456
+
+
+Request Body:
+json
+{
+  "taskTitle": "Complete Project Phase 1",
+  "taskStatus": "Completed"
+}
+
+
+Response:
+json
+{
+  "message": "Task updated successfully",
+  "task": {
+    "_id": "456",
+    "taskTitle": "Complete Project Phase 1",
+    "taskDescription": "Finish the project tasks by the deadline",
+    "taskAssignedTo": "John Doe",
+    "taskPriority": "High",
+    "taskStatus": "Completed"
+  }
+}
+
+
+### Delete Task
+
+Deletes a task based on the provided task ID.
+
+- URL: /api/v1/task/delete-task/taskID:
+- Method: DELETE
+- Parameters:
+  - taskId (required): The ID of the task.
+- Response:
+  - 200 OK: If the task is deleted successfully, along with the deleted task details.
+  - 404 Not Found: If the task with the specified ID is not found.
+  - 500 Internal Server Error: If there was an error deleting the task.
+
+Example
+
+Request:
+
+DELETE /api/v1/task/delete-task/456
+
+Response:
+
+json
+{
+  "message": "Task deleted successfully",
+  "task": {
+    "_id": "456",
+    "taskTitle": "Complete Project Phase 1",
+    "taskDescription": "Finish the project tasks by the deadline",
+    "taskAssignedTo": "John Doe",
+    "taskPriority": "High",
+    "taskStatus": "Completed"
+  }
+}
+
+
+## Example Data
+
+Here is an example of the data that can be used to test the API endpoints:
+
+Tasks Data
+
+json
+[
+  {
+    "_id": "123",
+    "taskTitle": "Complete Project Phase 1",
+    "taskDescription": "Finish the project tasks by the deadline",
+    "taskAssignedTo": "John Doe",
+    "taskPriority": "High",
+    "taskStatus": "In Progress"
+  },
+  {
+    "_id": "456",
+    "taskTitle": "Review Design Mockups",
+    "taskDescription": "Provide feedback on the design mockups for the new website",
+    "taskAssignedTo": "Jane Smith",
+    "taskPriority": "Medium",
+    "taskStatus": "Pending"
+  }
+]
+
+
+User Data
+
+json
+[
+  {
+    "_id": "123",
+    "userName": "John Doe",
+    "userEmail": "johndoe@example.com"
+  },
+  {
+    "_id": "456",
+    "userName": "Jane Smith",
+    "userEmail": "janesmith@example.com"
+  }
+]
+
+_______________________________________________________________________________________________________________
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+## Acknowledgments
+
+We would like to express our gratitude to the open-source community for providing valuable resources and tools that have been instrumental in the development of this project.
+
+## Contact
+
+For any inquiries or feedback, please contact:
+
+- Project Maintainer: [ `Saurabh Dixit` ]
+- Email: [ `smartds2550@gmail.com`  ]
+
+Feel free to reach out with any questions, suggestions, or collaboration opportunities. Thank you for using this project!
